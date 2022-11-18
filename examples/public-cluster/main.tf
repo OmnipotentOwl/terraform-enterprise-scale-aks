@@ -59,7 +59,7 @@ module "cluster" {
       max_pods_per_node  = 200
       os_disk_size_gb    = 100
       pool_max_size      = 3
-      pool_min_size      = 0
+      pool_min_size      = 1
       pool_sku           = "Standard_D4as_v4"
       subnet_cidr        = ["10.1.16.0/20"]
       k8s_labels = {}
