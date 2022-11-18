@@ -1,0 +1,10 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: image-reflector-controller
+spec:
+  template:
+    spec:
+      containers:
+      - args:
+          - --azure-autologin-for-acr

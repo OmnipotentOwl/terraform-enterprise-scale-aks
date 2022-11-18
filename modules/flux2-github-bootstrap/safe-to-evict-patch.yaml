@@ -1,0 +1,10 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: all-flux-components
+spec:
+  template:
+    metadata:
+      annotations:
+        # Required by Kubernetes node autoscaler
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
