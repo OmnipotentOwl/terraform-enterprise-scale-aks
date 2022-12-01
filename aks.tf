@@ -207,3 +207,16 @@ resource "azurerm_role_assignment" "aks_kublet_security_rg_managed_identity_oper
   role_definition_name = "Managed Identity Operator"
   principal_id         = azurerm_kubernetes_cluster.k8s.kubelet_identity[0].object_id
 }
+module "private_storage_class" {
+  count = local.use_built_in_storage_class ? 1 : 0
+  source = "./modules/azure-private-storage-class"
+
+  cluster_name = azurerm_kubernetes_cluster.k8s.name
+  zonal_replication = can(var.aks_configuration.private_cluster.private_storage.enable_zonal_replication) ? var.aks_configuration.private_cluster.private_storage.enable_zonal_replication : false
+  private_endpoint_subnet = var.aks_configuration.private_cluster.private_endpoint_subnet
+  storage_resource_group = {
+    id = "${data.azurerm_subscription.current.id}/resourceGroups/${azurerm_kubernetes_cluster.k8s.node_resource_group}"
+    name = azurerm_kubernetes_cluster.k8s.node_resource_group
+    location = azurerm_kubernetes_cluster.k8s.location
+  }
+}
