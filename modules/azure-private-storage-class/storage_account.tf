@@ -159,7 +159,7 @@ resource "azurerm_storage_account" "premium_nfs" {
   account_tier             = "Premium"
   account_replication_type = var.zonal_replication ? "ZRS" : "LRS"
 
-  enable_https_traffic_only       = false
+  enable_https_traffic_only       = false # NFS doesnt support encryption
   min_tls_version                 = "TLS1_2"
   allow_nested_items_to_be_public = false
   public_network_access_enabled   = false
