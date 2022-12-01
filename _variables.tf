@@ -57,6 +57,16 @@ variable "aks_configuration" {
     private_cluster = object({
       private_dns_zone_id = string
       enable_public_fqdn  = bool
+      private_endpoint_subnet = object({
+        id                  = string
+        name                = string
+        resource_group_name = string
+      })
+      private_storage = object({
+        enable_built_in_storage_class = bool
+        enable_zonal_replication      = bool
+        existing_storage_class_name   = string
+      })
     })
     managed_addons = object({
       open_service_mesh      = bool

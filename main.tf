@@ -15,6 +15,7 @@ locals {
   udr_routing_enabled           = can(var.network_configuration.egress_configuration.egress_type) ? var.network_configuration.egress_configuration.egress_type == "userDefinedRouting" : false
   app_gateway_enabled           = can(var.network_configuration.ingress_configuration.app_gateway.subnet_address_space) ? true : false
   internal_loadbalancer_enabled = can(var.network_configuration.ingress_configuration.internal_loadbalancer_enabled) ? var.network_configuration.ingress_configuration.internal_loadbalancer_enabled : false
+  use_built_in_storage_class    = can(var.aks_configuration.private_cluster.private_storage.enable_built_in_storage_class) ? var.aks_configuration.private_cluster.private_storage.enable_built_in_storage_class : false
 
   spot_pool_configurations   = { for k, v in var.k8s_spot_pool_configurations : k => v }
   worker_pool_configurations = { for k, v in var.k8s_worker_pool_configurations : k => v }
