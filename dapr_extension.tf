@@ -10,8 +10,9 @@ resource "azapi_resource" "dapr_addon" {
       extensionType           = "Microsoft.Dapr"
       autoUpgradeMinorVersion = true
       configurationSettings = {
-        "global.ha.enabled"   = "true"
-        "global.mtls.enabled" = "${var.aks_configuration.managed_addons.open_service_mesh ? "false" : "true"}"
+        "global.ha.enabled"                            = "true"
+        "global.mtls.enabled"                          = "${var.aks_configuration.managed_addons.open_service_mesh ? "false" : "true"}"
+        "dapr_placement.volumeclaims.storageClassName" = "${local.private_cluster_defined ? local.use_built_in_storage_class ? module.private_storage_class.standard_files_storage_class_name : var.aks_configuration.private_cluster.private_storage.existing_storage_class_name : "azurefile-csi"}"
       }
       releaseTrain = "Stable"
     }
