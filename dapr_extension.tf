@@ -21,4 +21,9 @@ resource "azapi_resource" "dapr_addon" {
   timeouts {
     create = "20m"
   }
+  depends_on = [
+    azurerm_kubernetes_cluster.k8s,
+    azurerm_kubernetes_cluster_node_pool.worker_pool,
+    module.private_storage_class
+  ]
 }

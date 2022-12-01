@@ -203,4 +203,9 @@ module "private_storage_class" {
     name = azurerm_kubernetes_cluster.k8s.node_resource_group
     location = azurerm_kubernetes_cluster.k8s.location
   }
+
+  depends_on = [
+    azurerm_kubernetes_cluster.k8s,
+    azurerm_kubernetes_cluster_node_pool.worker_pool,
+  ]
 }
