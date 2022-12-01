@@ -5,4 +5,9 @@ module "flux_gitops_github" {
 
   cluster_name         = azurerm_kubernetes_cluster.k8s.name
   github_configuration = var.aks_configuration.gitops_bootstrapping_github
+
+  depends_on = [
+    azurerm_kubernetes_cluster.k8s,
+    azurerm_kubernetes_cluster_node_pool.worker_pool
+  ]
 }
