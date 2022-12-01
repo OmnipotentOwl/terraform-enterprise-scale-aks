@@ -1,3 +1,5 @@
+data "azurerm_client_config" "current" {}
+
 resource "random_pet" "cluster" {
   length = 2
 }
@@ -66,4 +68,10 @@ module "cluster" {
       k8s_taints         = []
     }
   ]
+}
+
+resource "azurerm_role_assignment" "grant_example_admin_access_to_cluster" {
+  scope = module.cluster.cluster_id
+  role_definition_name = "Azure Kubernetes Service RBAC Cluster Admin"
+  principal_id = data.azurerm_client_config.current.object_id
 }
