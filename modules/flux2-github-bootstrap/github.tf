@@ -33,7 +33,7 @@ resource "github_repository_file" "kustomize" {
 resource "github_repository_file" "patches" {
   #  `patch_file_paths` is a map keyed by the keys of `flux_sync.main`
   #  whose values are the paths where the patch files should be installed.
-  for_each   = data.flux_sync.main.patch_file_paths
+  for_each = data.flux_sync.main.patch_file_paths
 
   repository = data.github_repository.main.name
   file       = each.value

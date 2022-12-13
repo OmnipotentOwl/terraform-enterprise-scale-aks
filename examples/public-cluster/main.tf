@@ -62,8 +62,8 @@ module "cluster" {
       pool_min_size      = 1
       pool_sku           = "Standard_D4as_v4"
       subnet_cidr        = ["10.1.16.0/20"]
-      k8s_labels = {}
-      k8s_taints = []
+      k8s_labels         = {}
+      k8s_taints         = []
     }
   ]
 }
