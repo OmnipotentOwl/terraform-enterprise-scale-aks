@@ -29,6 +29,7 @@ terraform {
       version = ">= 1.10.0"
     }
   }
+  required_version = "~> 1.3.0"
 }
 provider "github" {
   owner = can(var.aks_configuration.gitops_bootstrapping_github.organization_name) ? var.aks_configuration.gitops_bootstrapping_github.organization_name : null

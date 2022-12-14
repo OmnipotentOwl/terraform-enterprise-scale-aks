@@ -34,8 +34,8 @@ variable "network_configuration" {
     ingress_configuration = object({
       app_gateway = object({
         sku                  = string
-        min_size             = number
-        max_size             = number
+        min_size             = optional(number, 0)
+        max_size             = optional(number, 10)
         subnet_address_space = list(string)
         availability_zones   = list(string)
       })
@@ -56,14 +56,14 @@ variable "aks_configuration" {
   type = object({
     private_cluster = object({
       private_dns_zone_id = string
-      enable_public_fqdn  = bool
+      enable_public_fqdn  = optional(bool, false)
     })
     managed_addons = object({
-      open_service_mesh      = bool
-      oidc_issuer            = bool
-      dapr                   = bool
-      oms_agent_workspace_id = string
-      defender_workspace_id  = string
+      open_service_mesh      = optional(bool, false)
+      oidc_issuer            = optional(bool, false)
+      dapr                   = optional(bool, false)
+      oms_agent_workspace_id = optional(string)
+      defender_workspace_id  = optional(string)
     })
     security_options = object({
       enable_host_encryption   = bool
@@ -93,8 +93,8 @@ variable "aks_configuration" {
 }
 variable "aks_update_maintenance_configuration" {
   type = object({
-    aks_uptime_sku            = string
-    automatic_channel_upgrade = string
+    aks_uptime_sku            = optional(string, "Free")
+    automatic_channel_upgrade = optional(string, "stable")
   })
   default = {
     aks_uptime_sku            = "Free"
