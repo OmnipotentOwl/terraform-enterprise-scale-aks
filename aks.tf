@@ -1,3 +1,4 @@
+#tfsec:ignore:azure-container-logging
 resource "azurerm_kubernetes_cluster" "k8s" {
   name                                = local.aks_name
   location                            = azurerm_resource_group.cluster.location
@@ -9,9 +10,8 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   private_dns_zone_id                 = local.private_cluster_defined ? var.aks_configuration.private_cluster.private_dns_zone_id : null
   private_cluster_public_fqdn_enabled = local.private_cluster_defined ? var.aks_configuration.private_cluster.enable_public_fqdn : null
   automatic_channel_upgrade           = var.aks_update_maintenance_configuration.automatic_channel_upgrade
-  disk_encryption_set_id              = local.customer_managed_keys_enabled ? azurerm_disk_encryption_set.aks_customer_managed_key.0.id : null
+  disk_encryption_set_id              = local.customer_managed_keys_enabled ? azurerm_disk_encryption_set.aks_customer_managed_key[0].id : null
   node_resource_group                 = "MC_${substr(azurerm_resource_group.cluster.name, 0, 15)}_${local.aks_name}"
-
 
   default_node_pool {
     name                         = "systempool"
@@ -31,7 +31,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 
   identity {
     type         = local.private_cluster_defined ? "UserAssigned" : "SystemAssigned"
-    identity_ids = local.private_cluster_defined ? [azurerm_user_assigned_identity.cluster_control_plane.0.id] : null
+    identity_ids = local.private_cluster_defined ? [azurerm_user_assigned_identity.cluster_control_plane[0].id] : null
   }
 
   auto_scaler_profile {
@@ -160,9 +160,9 @@ resource "azurerm_disk_encryption_set" "aks_customer_managed_key" {
   count = local.customer_managed_keys_enabled ? 1 : 0
 
   name                      = "des-${local.aks_name}"
-  resource_group_name       = azurerm_key_vault.aks_customer_managed_keys_encryption.0.resource_group_name
-  location                  = azurerm_key_vault.aks_customer_managed_keys_encryption.0.location
-  key_vault_key_id          = azurerm_key_vault_key.aks_customer_managed_keys_encryption.0.id
+  resource_group_name       = azurerm_key_vault.aks_customer_managed_keys_encryption[0].resource_group_name
+  location                  = azurerm_key_vault.aks_customer_managed_keys_encryption[0].location
+  key_vault_key_id          = azurerm_key_vault_key.aks_customer_managed_keys_encryption[0].id
   auto_key_rotation_enabled = true
   encryption_type           = "EncryptionAtRestWithCustomerKey"
 

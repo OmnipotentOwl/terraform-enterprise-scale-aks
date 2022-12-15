@@ -1,11 +1,14 @@
 variable "workload_name" {
-  type = string
+  type        = string
+  description = "(required) workload name to seed into globaly unique names for resources"
 }
 variable "region_name" {
-  type = string
+  type        = string
+  description = "(required) region name to provision resources into"
 }
 variable "environment" {
-  type = string
+  type        = string
+  description = "(required) environment name to seed into globaly unique names for resources"
 }
 variable "organization_suffix" {
   type        = string
@@ -17,6 +20,7 @@ variable "container_registry" {
     name                = string
     resource_group_name = string
   })
+  description = "(required) container registry object to pull images from"
 }
 variable "network_configuration" {
   type = object({
@@ -51,6 +55,7 @@ variable "network_configuration" {
       })
     })
   })
+  description = "(required) network configuration for the AKS cluster"
 }
 variable "aks_configuration" {
   type = object({
@@ -90,6 +95,7 @@ variable "aks_configuration" {
     }
     gitops_bootstrapping_github = null
   }
+  description = "AKS configuration options for cluster provisioning"
 }
 variable "aks_update_maintenance_configuration" {
   type = object({
@@ -100,12 +106,13 @@ variable "aks_update_maintenance_configuration" {
     aks_uptime_sku            = "Free"
     automatic_channel_upgrade = "stable"
   }
+  description = "AKS update maintenance configuration"
 }
 variable "k8s_system_pool_configuration" {
   type = object({
     pool_sku           = string
-    pool_min_size      = number
-    pool_max_size      = number
+    pool_min_size      = optional(number, 0)
+    pool_max_size      = optional(number, 3)
     os_disk_size_gb    = number
     max_pods_per_node  = number
     subnet_cidr        = list(string)
@@ -120,12 +127,13 @@ variable "k8s_system_pool_configuration" {
     subnet_cidr        = []
     availability_zones = []
   }
+  description = "System pool configuration to be created in the AKS cluster"
 }
 variable "k8s_spot_pool_configurations" {
   type = list(object({
     pool_sku           = string
-    pool_min_size      = number
-    pool_max_size      = number
+    pool_min_size      = optional(number, 0)
+    pool_max_size      = optional(number, 3)
     os_disk_size_gb    = number
     max_pods_per_node  = number
     spot_max_price     = number
@@ -134,13 +142,14 @@ variable "k8s_spot_pool_configurations" {
     k8s_taints         = list(string)
     availability_zones = list(string)
   }))
-  default = []
+  default     = []
+  description = "List of spot worker pools to be created in the AKS cluster"
 }
 variable "k8s_worker_pool_configurations" {
   type = list(object({
     pool_sku           = string
-    pool_min_size      = number
-    pool_max_size      = number
+    pool_min_size      = optional(number, 0)
+    pool_max_size      = optional(number, 3)
     os_disk_size_gb    = number
     max_pods_per_node  = number
     subnet_cidr        = list(string)
@@ -148,5 +157,6 @@ variable "k8s_worker_pool_configurations" {
     k8s_taints         = list(string)
     availability_zones = list(string)
   }))
-  default = []
+  default     = []
+  description = "List of worker pools to be created in the AKS cluster"
 }

@@ -1,9 +1,9 @@
 resource "azurerm_network_security_group" "app_gateway" {
   count = local.app_gateway_enabled ? 1 : 0
 
-  name                = "nsg-${azurerm_subnet.app_gateway.0.name}-${local.region_name_sanitized}"
+  name                = "nsg-${azurerm_subnet.app_gateway[0].name}-${local.region_name_sanitized}"
   location            = local.region_name_sanitized
-  resource_group_name = azurerm_subnet.app_gateway.0.resource_group_name
+  resource_group_name = azurerm_subnet.app_gateway[0].resource_group_name
 }
 resource "azurerm_network_security_rule" "app_gateway_allow_80_inbound" {
   count = local.app_gateway_enabled ? 1 : 0
@@ -18,8 +18,8 @@ resource "azurerm_network_security_rule" "app_gateway_allow_80_inbound" {
   destination_port_range      = "80"
   source_address_prefix       = "Internet"
   destination_address_prefix  = "VirtualNetwork"
-  resource_group_name         = azurerm_network_security_group.app_gateway.0.resource_group_name
-  network_security_group_name = azurerm_network_security_group.app_gateway.0.name
+  resource_group_name         = azurerm_network_security_group.app_gateway[0].resource_group_name
+  network_security_group_name = azurerm_network_security_group.app_gateway[0].name
 }
 resource "azurerm_network_security_rule" "app_gateway_allow_443_inbound" {
   count = local.app_gateway_enabled ? 1 : 0
@@ -34,8 +34,8 @@ resource "azurerm_network_security_rule" "app_gateway_allow_443_inbound" {
   destination_port_range      = "443"
   source_address_prefix       = "Internet"
   destination_address_prefix  = "VirtualNetwork"
-  resource_group_name         = azurerm_network_security_group.app_gateway.0.resource_group_name
-  network_security_group_name = azurerm_network_security_group.app_gateway.0.name
+  resource_group_name         = azurerm_network_security_group.app_gateway[0].resource_group_name
+  network_security_group_name = azurerm_network_security_group.app_gateway[0].name
 }
 resource "azurerm_network_security_rule" "app_gateway_allow_control_plane_inbound" {
   count = local.app_gateway_enabled ? 1 : 0
@@ -50,8 +50,8 @@ resource "azurerm_network_security_rule" "app_gateway_allow_control_plane_inboun
   destination_port_range      = "65200-65535"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = azurerm_network_security_group.app_gateway.0.resource_group_name
-  network_security_group_name = azurerm_network_security_group.app_gateway.0.name
+  resource_group_name         = azurerm_network_security_group.app_gateway[0].resource_group_name
+  network_security_group_name = azurerm_network_security_group.app_gateway[0].name
 }
 resource "azurerm_network_security_rule" "app_gateway_allow_health_probes_inbound" {
   count = local.app_gateway_enabled ? 1 : 0
@@ -66,8 +66,8 @@ resource "azurerm_network_security_rule" "app_gateway_allow_health_probes_inboun
   destination_port_range      = "*"
   source_address_prefix       = "AzureLoadBalancer"
   destination_address_prefix  = "VirtualNetwork"
-  resource_group_name         = azurerm_network_security_group.app_gateway.0.resource_group_name
-  network_security_group_name = azurerm_network_security_group.app_gateway.0.name
+  resource_group_name         = azurerm_network_security_group.app_gateway[0].resource_group_name
+  network_security_group_name = azurerm_network_security_group.app_gateway[0].name
 }
 resource "azurerm_network_security_rule" "app_gateway_allow_all_outbound" {
   count = local.app_gateway_enabled ? 1 : 0
@@ -81,14 +81,14 @@ resource "azurerm_network_security_rule" "app_gateway_allow_all_outbound" {
   destination_port_range      = "*"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = azurerm_network_security_group.app_gateway.0.resource_group_name
-  network_security_group_name = azurerm_network_security_group.app_gateway.0.name
+  resource_group_name         = azurerm_network_security_group.app_gateway[0].resource_group_name
+  network_security_group_name = azurerm_network_security_group.app_gateway[0].name
 }
 resource "azurerm_subnet_network_security_group_association" "app_gateway" {
   count = local.app_gateway_enabled ? 1 : 0
 
-  subnet_id                 = azurerm_subnet.app_gateway.0.id
-  network_security_group_id = azurerm_network_security_group.app_gateway.0.id
+  subnet_id                 = azurerm_subnet.app_gateway[0].id
+  network_security_group_id = azurerm_network_security_group.app_gateway[0].id
   depends_on = [
     azurerm_network_security_rule.app_gateway_allow_443_inbound,
     azurerm_network_security_rule.app_gateway_allow_control_plane_inbound,
@@ -99,15 +99,15 @@ resource "azurerm_subnet_network_security_group_association" "app_gateway" {
 resource "azurerm_network_security_group" "ingress_ilb" {
   count = local.internal_loadbalancer_enabled ? 1 : 0
 
-  name                = "nsg-${azurerm_subnet.ingress_ilb.0.name}-${local.region_name_sanitized}"
+  name                = "nsg-${azurerm_subnet.ingress_ilb[0].name}-${local.region_name_sanitized}"
   location            = local.region_name_sanitized
-  resource_group_name = azurerm_subnet.ingress_ilb.0.resource_group_name
+  resource_group_name = azurerm_subnet.ingress_ilb[0].resource_group_name
 }
 resource "azurerm_subnet_network_security_group_association" "ingress_ilb" {
   count = local.internal_loadbalancer_enabled ? 1 : 0
 
-  subnet_id                 = azurerm_subnet.ingress_ilb.0.id
-  network_security_group_id = azurerm_network_security_group.ingress_ilb.0.id
+  subnet_id                 = azurerm_subnet.ingress_ilb[0].id
+  network_security_group_id = azurerm_network_security_group.ingress_ilb[0].id
 }
 
 resource "azurerm_network_security_group" "aks_system_pool" {

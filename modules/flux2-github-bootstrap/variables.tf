@@ -1,9 +1,6 @@
-variable "cluster_type" {
-  type    = string
-  default = "aks"
-}
 variable "cluster_name" {
-  type = string
+  type        = string
+  description = "name of the cluster to bootstrap in cloud provider"
 }
 variable "github_configuration" {
   type = object({
@@ -11,4 +8,5 @@ variable "github_configuration" {
     repository_name   = string
     branch_name       = string
   })
+  description = "configuration for github connection"
 }

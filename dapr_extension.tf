@@ -10,7 +10,8 @@ resource "azapi_resource" "dapr_addon" {
       extensionType           = "Microsoft.Dapr"
       autoUpgradeMinorVersion = true
       configurationSettings = {
-        "global.ha.enabled"   = "true"
+        "global.ha.enabled" = "true"
+        #tflint-ignore: terraform_deprecated_interpolation
         "global.mtls.enabled" = "${var.aks_configuration.managed_addons.open_service_mesh ? "false" : "true"}"
       }
       releaseTrain = "Stable"
