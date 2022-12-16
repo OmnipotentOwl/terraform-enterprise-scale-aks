@@ -8,6 +8,7 @@ locals {
   aks_dns_name_prefix           = "${local.aks_name}-dns"
   app_gateway_name              = "appgw-${local.aks_name}"
   app_gateway_public_ip_name    = "pip-${local.app_gateway_name}"
+  container_registry_defined    = can(var.container_registry.id) ? true : false
   private_cluster_defined       = can(var.aks_configuration.private_cluster.private_dns_zone_id)
   customer_managed_keys_enabled = can(var.aks_configuration.security_options.enable_self_managed_keys) ? var.aks_configuration.security_options.enable_self_managed_keys : false
   existing_vnet_defined         = can(var.network_configuration.existing_vnet.name)

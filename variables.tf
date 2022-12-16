@@ -20,7 +20,7 @@ variable "container_registry" {
     name                = string
     resource_group_name = string
   })
-  description = "(required) container registry object to pull images from"
+  description = "(optional) container registry object to pull images from using the AKS cluster identity"
 }
 variable "network_configuration" {
   type = object({
