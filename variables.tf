@@ -138,8 +138,8 @@ variable "k8s_spot_pool_configurations" {
     max_pods_per_node  = number
     spot_max_price     = number
     subnet_cidr        = list(string)
-    k8s_labels         = map(string)
-    k8s_taints         = list(string)
+    k8s_labels         = optional(map(string), {})
+    k8s_taints         = optional(list(string), [])
     availability_zones = list(string)
   }))
   default     = []
@@ -153,8 +153,8 @@ variable "k8s_worker_pool_configurations" {
     os_disk_size_gb    = number
     max_pods_per_node  = number
     subnet_cidr        = list(string)
-    k8s_labels         = map(string)
-    k8s_taints         = list(string)
+    k8s_labels         = optional(map(string), {})
+    k8s_taints         = optional(list(string), [])
     availability_zones = list(string)
   }))
   default     = []
