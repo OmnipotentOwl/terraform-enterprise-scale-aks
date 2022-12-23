@@ -8,7 +8,7 @@ locals {
   container_registry_defined    = can(var.container_registry.id) ? true : false
   private_cluster_defined       = can(var.aks_configuration.private_cluster.private_dns_zone_id)
   customer_managed_keys_enabled = can(var.aks_configuration.security_options.enable_self_managed_keys) ? var.aks_configuration.security_options.enable_self_managed_keys : false
-  existing_vnet_defined         = can(var.network_configuration.existing_vnet.name)
+  existing_vnet_defined         = can(var.network_configuration.vnet_configuration.vnet_address_space) ? false : true
   udr_routing_enabled           = can(var.network_configuration.egress_configuration.egress_type) ? var.network_configuration.egress_configuration.egress_type == "userDefinedRouting" : false
   app_gateway_enabled           = can(var.network_configuration.ingress_configuration.app_gateway.subnet_address_space) ? true : false
   internal_loadbalancer_enabled = can(var.network_configuration.ingress_configuration.internal_loadbalancer_enabled) ? var.network_configuration.ingress_configuration.internal_loadbalancer_enabled : false
