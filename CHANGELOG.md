@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+### [1.1.1](https://github.com/OmnipotentOwl/terraform-azurerm-enterprise-scale-aks/compare/v1.1.0...v1.1.1) (2022-12-23)
+
+
+### Bug Fixes
+
+* move existing vnet check to leverage configuration properties vs reference to resource. ([bf68172](https://github.com/OmnipotentOwl/terraform-azurerm-enterprise-scale-aks/commit/bf681721ce26612fb759cf175ef0302268a79fb0))
+
 ## [1.1.0](https://github.com/OmnipotentOwl/terraform-azurerm-enterprise-scale-aks/compare/v1.0.0...v1.1.0) (2022-12-23)
 
 
