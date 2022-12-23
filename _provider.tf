@@ -28,6 +28,10 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = ">= 1.10.0"
     }
+    azurecaf = {
+      source  = "aztfmod/azurecaf"
+      version = ">= 1.2.23"
+    }
   }
   required_version = "~> 1.3.0"
 }
