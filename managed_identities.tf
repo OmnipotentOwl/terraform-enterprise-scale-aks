@@ -1,22 +1,51 @@
+resource "azurecaf_name" "azurerm_user_assigned_identity_cluster_control_plane" {
+  count = local.private_cluster_defined ? 1 : 0
+
+  name          = azurecaf_name.azurerm_kubernetes_cluster_k8s.result
+  resource_type = "azurerm_user_assigned_identity"
+  suffixes = [
+    "cluster"
+  ]
+  clean_input = true
+}
 resource "azurerm_user_assigned_identity" "cluster_control_plane" {
   count = local.private_cluster_defined ? 1 : 0
 
-  name                = "id-${local.aks_name}-cluster"
+  name                = azurecaf_name.azurerm_user_assigned_identity_cluster_control_plane[0].result
   resource_group_name = azurerm_resource_group.security.name
   location            = azurerm_resource_group.security.location
+}
+resource "azurecaf_name" "azurerm_user_assigned_identity_app_gateway_secrets" {
+  count = local.app_gateway_enabled ? 1 : 0
+
+  name          = azurecaf_name.azurerm_application_gateway_aks_ingress[0].result
+  resource_type = "azurerm_user_assigned_identity"
+  suffixes = [
+    "secrets"
+  ]
+  clean_input = true
 }
 resource "azurerm_user_assigned_identity" "app_gateway_secrets" {
   count = local.app_gateway_enabled ? 1 : 0
 
-  name                = "id-${local.app_gateway_name}-secrets"
+  name                = azurecaf_name.azurerm_user_assigned_identity_app_gateway_secrets[0].result
   resource_group_name = azurerm_resource_group.security.name
   location            = azurerm_resource_group.security.location
 }
+resource "azurecaf_name" "azurerm_user_assigned_identity_app_gateway_controller" {
+  count = local.app_gateway_enabled ? 1 : 0
 
+  name          = azurecaf_name.azurerm_application_gateway_aks_ingress[0].result
+  resource_type = "azurerm_user_assigned_identity"
+  suffixes = [
+    "controller"
+  ]
+  clean_input = true
+}
 resource "azurerm_user_assigned_identity" "app_gateway_controller" {
   count = local.app_gateway_enabled ? 1 : 0
 
-  name                = "id-${local.app_gateway_name}-controller"
+  name                = azurecaf_name.azurerm_user_assigned_identity_app_gateway_controller[0].result
   resource_group_name = azurerm_resource_group.security.name
   location            = azurerm_resource_group.security.location
 }

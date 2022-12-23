@@ -1,6 +1,17 @@
+resource "azurecaf_name" "azurerm_kubernetes_cluster_k8s" {
+  name          = local.workload_name_sanitized
+  resource_type = "azurerm_kubernetes_cluster"
+  suffixes = [
+    local.org_suffix_sanitized,
+    local.environment_sanitized,
+    local.region_name_sanitized,
+    format("%03d", var.deployment_itteration)
+  ]
+  clean_input = true
+}
 #tfsec:ignore:azure-container-logging
 resource "azurerm_kubernetes_cluster" "k8s" {
-  name                                = local.aks_name
+  name                                = azurecaf_name.azurerm_kubernetes_cluster_k8s.result
   location                            = azurerm_resource_group.cluster.location
   resource_group_name                 = azurerm_resource_group.cluster.name
   sku_tier                            = var.aks_update_maintenance_configuration.aks_uptime_sku
@@ -11,7 +22,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   private_cluster_public_fqdn_enabled = local.private_cluster_defined ? var.aks_configuration.private_cluster.enable_public_fqdn : null
   automatic_channel_upgrade           = var.aks_update_maintenance_configuration.automatic_channel_upgrade
   disk_encryption_set_id              = local.customer_managed_keys_enabled ? azurerm_disk_encryption_set.aks_customer_managed_key[0].id : null
-  node_resource_group                 = "MC_${substr(azurerm_resource_group.cluster.name, 0, 15)}_${local.aks_name}"
+  node_resource_group                 = "MC_${substr(azurerm_resource_group.cluster.name, 0, 15)}_${azurecaf_name.azurerm_kubernetes_cluster_k8s.result}"
 
   default_node_pool {
     name                         = "systempool"
@@ -155,11 +166,17 @@ resource "azurerm_kubernetes_cluster_node_pool" "worker_pool" {
     ]
   }
 }
+resource "azurecaf_name" "azurerm_disk_encryption_set_aks_customer_managed_key" {
+  count = local.customer_managed_keys_enabled ? 1 : 0
 
+  name          = azurecaf_name.azurerm_kubernetes_cluster_k8s.result
+  resource_type = "azurerm_disk_encryption_set"
+  clean_input   = true
+}
 resource "azurerm_disk_encryption_set" "aks_customer_managed_key" {
   count = local.customer_managed_keys_enabled ? 1 : 0
 
-  name                      = "des-${local.aks_name}"
+  name                      = azurecaf_name.azurerm_disk_encryption_set_aks_customer_managed_key[0].result
   resource_group_name       = azurerm_key_vault.aks_customer_managed_keys_encryption[0].resource_group_name
   location                  = azurerm_key_vault.aks_customer_managed_keys_encryption[0].location
   key_vault_key_id          = azurerm_key_vault_key.aks_customer_managed_keys_encryption[0].id

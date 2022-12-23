@@ -15,7 +15,7 @@ output "cluster_resource_group" {
   description = "cluster resource group object created by module"
 }
 output "cluster_name" {
-  value       = local.aks_name
+  value       = azurerm_kubernetes_cluster.k8s.name
   description = "name of the AKS cluster"
 }
 output "cluster_id" {

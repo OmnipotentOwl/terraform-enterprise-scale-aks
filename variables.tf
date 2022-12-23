@@ -14,6 +14,11 @@ variable "organization_suffix" {
   type        = string
   description = "(required) organizational suffix to seed into globaly unique names for resources"
 }
+variable "deployment_itteration" {
+  type        = number
+  description = "(optional) deployment itteration count to allow for multiple deployments into the same environment"
+  default     = 1
+}
 variable "container_registry" {
   type = object({
     id                  = string
