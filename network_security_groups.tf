@@ -1,7 +1,15 @@
+resource "azurecaf_name" "azurerm_network_security_group_app_gateway" {
+  count = local.app_gateway_enabled ? 1 : 0
+
+  name          = azurerm_subnet.app_gateway[0].name
+  resource_type = "azurerm_network_security_group"
+  suffixes      = [local.region_name_sanitized]
+  clean_input   = true
+}
 resource "azurerm_network_security_group" "app_gateway" {
   count = local.app_gateway_enabled ? 1 : 0
 
-  name                = "nsg-${azurerm_subnet.app_gateway[0].name}-${local.region_name_sanitized}"
+  name                = azurecaf_name.azurerm_network_security_group_app_gateway[0].result
   location            = local.region_name_sanitized
   resource_group_name = azurerm_subnet.app_gateway[0].resource_group_name
 }
@@ -95,11 +103,20 @@ resource "azurerm_subnet_network_security_group_association" "app_gateway" {
     azurerm_network_security_rule.app_gateway_allow_health_probes_inbound
   ]
 }
+resource "azurecaf_name" "azurerm_network_security_group_ingress_ilb" {
+  count = local.internal_loadbalancer_enabled ? 1 : 0
 
+  name          = azurerm_subnet.ingress_ilb[0].name
+  resource_type = "azurerm_network_security_group"
+  suffixes = [
+    local.region_name_sanitized
+  ]
+  clean_input = true
+}
 resource "azurerm_network_security_group" "ingress_ilb" {
   count = local.internal_loadbalancer_enabled ? 1 : 0
 
-  name                = "nsg-${azurerm_subnet.ingress_ilb[0].name}-${local.region_name_sanitized}"
+  name                = azurecaf_name.azurerm_network_security_group_ingress_ilb[0].result
   location            = local.region_name_sanitized
   resource_group_name = azurerm_subnet.ingress_ilb[0].resource_group_name
 }
@@ -109,9 +126,16 @@ resource "azurerm_subnet_network_security_group_association" "ingress_ilb" {
   subnet_id                 = azurerm_subnet.ingress_ilb[0].id
   network_security_group_id = azurerm_network_security_group.ingress_ilb[0].id
 }
-
+resource "azurecaf_name" "azurerm_network_security_group_aks_system_pool" {
+  name          = azurerm_subnet.aks_system_pool.name
+  resource_type = "azurerm_network_security_group"
+  suffixes = [
+    local.region_name_sanitized
+  ]
+  clean_input = true
+}
 resource "azurerm_network_security_group" "aks_system_pool" {
-  name                = "nsg-${azurerm_subnet.aks_system_pool.name}-${local.region_name_sanitized}"
+  name                = azurecaf_name.azurerm_network_security_group_aks_system_pool.result
   location            = local.region_name_sanitized
   resource_group_name = azurerm_subnet.aks_system_pool.resource_group_name
 }
@@ -129,11 +153,20 @@ resource "azurerm_network_security_rule" "aks_system_pool_deny_ssh_inbound" {
   resource_group_name         = azurerm_network_security_group.aks_system_pool.resource_group_name
   network_security_group_name = azurerm_network_security_group.aks_system_pool.name
 }
+resource "azurecaf_name" "azurerm_network_security_group_aks_spot_pool" {
+  for_each = local.spot_pool_configurations
 
+  name          = azurerm_subnet.aks_spot_pool[each.key].name
+  resource_type = "azurerm_network_security_group"
+  suffixes = [
+    local.region_name_sanitized
+  ]
+  clean_input = true
+}
 resource "azurerm_network_security_group" "aks_spot_pool" {
   for_each = local.spot_pool_configurations
 
-  name                = "nsg-${azurerm_subnet.aks_spot_pool[each.key].name}-${local.region_name_sanitized}"
+  name                = azurecaf_name.azurerm_network_security_group_aks_spot_pool[each.key].result
   location            = local.region_name_sanitized
   resource_group_name = azurerm_subnet.aks_spot_pool[each.key].resource_group_name
 }
@@ -159,11 +192,19 @@ resource "azurerm_subnet_network_security_group_association" "aks_spot_pool" {
   subnet_id                 = azurerm_subnet.aks_spot_pool[each.key].id
   network_security_group_id = azurerm_network_security_group.aks_spot_pool[each.key].id
 }
+resource "azurecaf_name" "azurerm_network_security_group_aks_worker_pool" {
+  for_each = local.worker_pool_configurations
 
+  name          = azurerm_subnet.aks_worker_pool[each.key].name
+  resource_type = "azurerm_network_security_group"
+  suffixes = [
+    local.region_name_sanitized
+  ]
+}
 resource "azurerm_network_security_group" "aks_worker_pool" {
   for_each = local.worker_pool_configurations
 
-  name                = "nsg-${azurerm_subnet.aks_worker_pool[each.key].name}-${local.region_name_sanitized}"
+  name                = azurecaf_name.azurerm_network_security_group_aks_worker_pool[each.key].result
   location            = local.region_name_sanitized
   resource_group_name = azurerm_subnet.aks_worker_pool[each.key].resource_group_name
 }

@@ -1,6 +1,19 @@
+resource "azurecaf_name" "azurerm_virtual_network_aks_vnet" {
+  count = local.existing_vnet_defined ? 0 : 1
+
+  name          = local.workload_name_sanitized
+  resource_type = "azurerm_virtual_network"
+  suffixes = [
+    local.environment_sanitized,
+    local.region_name_sanitized,
+    format("%03d", var.deployment_itteration)
+  ]
+  clean_input = true
+}
 resource "azurerm_virtual_network" "aks_vnet" {
-  count               = local.existing_vnet_defined ? 0 : 1
-  name                = "vnet-${local.workload_name_sanitized}-${local.environment_sanitized}-${local.region_name_sanitized}"
+  count = local.existing_vnet_defined ? 0 : 1
+
+  name                = azurecaf_name.azurerm_virtual_network_aks_vnet[0].result
   location            = local.existing_vnet_defined ? null : azurerm_resource_group.network[0].location
   resource_group_name = local.existing_vnet_defined ? null : azurerm_resource_group.network[0].name
   address_space       = local.existing_vnet_defined ? null : var.network_configuration.vnet_configuration.vnet_address_space
@@ -11,11 +24,17 @@ resource "azurerm_role_assignment" "aks_cluster_virtual_network_network_contribu
   role_definition_name = "Network Contributor"
   principal_id         = local.private_cluster_defined ? azurerm_user_assigned_identity.cluster_control_plane[0].principal_id : azurerm_kubernetes_cluster.k8s.identity[0].principal_id
 }
+resource "azurecaf_name" "azurerm_subnet_app_gateway" {
+  count = local.app_gateway_enabled ? 1 : 0
 
+  name          = "app-gateway"
+  resource_type = "azurerm_subnet"
+  clean_input   = true
+}
 resource "azurerm_subnet" "app_gateway" {
   count = local.app_gateway_enabled ? 1 : 0
 
-  name                 = "snet-app-gateway"
+  name                 = azurecaf_name.azurerm_subnet_app_gateway[0].result
   resource_group_name  = local.existing_vnet_defined ? var.network_configuration.existing_vnet.resource_group_name : azurerm_virtual_network.aks_vnet[0].resource_group_name
   virtual_network_name = local.existing_vnet_defined ? var.network_configuration.existing_vnet.name : azurerm_virtual_network.aks_vnet[0].name
   address_prefixes     = local.app_gateway_enabled ? var.network_configuration.ingress_configuration.app_gateway_subnet_address_space : null
@@ -24,15 +43,28 @@ resource "azurerm_subnet" "app_gateway" {
     "Microsoft.KeyVault"
   ]
 }
+resource "azurecaf_name" "azurerm_subnet_ingress_ilb" {
+  count = local.internal_loadbalancer_enabled ? 1 : 0
+
+  name          = "cluster-ingressservices"
+  resource_type = "azurerm_subnet"
+  clean_input   = true
+}
 resource "azurerm_subnet" "ingress_ilb" {
-  count                = local.internal_loadbalancer_enabled ? 1 : 0
-  name                 = "snet-cluster-ingressservices"
+  count = local.internal_loadbalancer_enabled ? 1 : 0
+
+  name                 = azurecaf_name.azurerm_subnet_ingress_ilb[0].result
   resource_group_name  = local.existing_vnet_defined ? var.network_configuration.existing_vnet.resource_group_name : azurerm_virtual_network.aks_vnet[0].resource_group_name
   virtual_network_name = local.existing_vnet_defined ? var.network_configuration.existing_vnet.name : azurerm_virtual_network.aks_vnet[0].name
   address_prefixes     = local.internal_loadbalancer_enabled ? var.network_configuration.ingress_configuration.internal_loadbalancer_subnet_address_space : null
 }
+resource "azurecaf_name" "azurerm_subnet_aks_system_pool" {
+  name          = "aks-nodepool-system"
+  resource_type = "azurerm_subnet"
+  clean_input   = true
+}
 resource "azurerm_subnet" "aks_system_pool" {
-  name                 = "snet-aks-nodepool-system"
+  name                 = azurecaf_name.azurerm_subnet_aks_system_pool.result
   resource_group_name  = local.existing_vnet_defined ? var.network_configuration.existing_vnet.resource_group_name : azurerm_virtual_network.aks_vnet[0].resource_group_name
   virtual_network_name = local.existing_vnet_defined ? var.network_configuration.existing_vnet.name : azurerm_virtual_network.aks_vnet[0].name
   address_prefixes     = var.k8s_system_pool_configuration.subnet_cidr
@@ -44,18 +76,34 @@ resource "azurerm_subnet" "aks_system_pool" {
     ]
   }
 }
+resource "azurecaf_name" "azurerm_subnet_aks_spot_pool" {
+  for_each = local.spot_pool_configurations
+
+  name          = "aks-nodepool-spot"
+  resource_type = "azurerm_subnet"
+  suffixes      = [each.key]
+  clean_input   = true
+}
 resource "azurerm_subnet" "aks_spot_pool" {
   for_each = local.spot_pool_configurations
 
-  name                 = "snet-aks-nodepool-spot${each.key}"
+  name                 = azurecaf_name.azurerm_subnet_aks_spot_pool[each.key].result
   resource_group_name  = local.existing_vnet_defined ? var.network_configuration.existing_vnet.resource_group_name : azurerm_virtual_network.aks_vnet[0].resource_group_name
   virtual_network_name = local.existing_vnet_defined ? var.network_configuration.existing_vnet.name : azurerm_virtual_network.aks_vnet[0].name
   address_prefixes     = each.value.subnet_cidr
 }
+resource "azurecaf_name" "azurerm_subnet_aks_worker_pool" {
+  for_each = local.worker_pool_configurations
+
+  name          = "aks-nodepool-worker"
+  resource_type = "azurerm_subnet"
+  suffixes      = [each.key]
+  clean_input   = true
+}
 resource "azurerm_subnet" "aks_worker_pool" {
   for_each = local.worker_pool_configurations
 
-  name                 = "snet-aks-nodepool-worker${each.key}"
+  name                 = azurecaf_name.azurerm_subnet_aks_worker_pool[each.key].result
   resource_group_name  = local.existing_vnet_defined ? var.network_configuration.existing_vnet.resource_group_name : azurerm_virtual_network.aks_vnet[0].resource_group_name
   virtual_network_name = local.existing_vnet_defined ? var.network_configuration.existing_vnet.name : azurerm_virtual_network.aks_vnet[0].name
   address_prefixes     = each.value.subnet_cidr

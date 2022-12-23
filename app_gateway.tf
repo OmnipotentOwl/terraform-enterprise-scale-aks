@@ -1,7 +1,14 @@
+resource "azurecaf_name" "azurerm_application_gateway_aks_ingress" {
+  count = local.app_gateway_enabled ? 1 : 0
+
+  name          = azurecaf_name.azurerm_kubernetes_cluster_k8s.result
+  resource_type = "azurerm_application_gateway"
+  clean_input   = true
+}
 resource "azurerm_application_gateway" "aks_ingress" {
   count = local.app_gateway_enabled ? 1 : 0
 
-  name                = local.app_gateway_name
+  name                = azurecaf_name.azurerm_application_gateway_aks_ingress[0].result
   resource_group_name = local.existing_vnet_defined ? var.network_configuration.existing_vnet.resource_group_name : azurerm_virtual_network.aks_vnet[0].resource_group_name
   location            = local.existing_vnet_defined ? var.network_configuration.existing_vnet.location : azurerm_virtual_network.aks_vnet[0].location
   zones               = var.network_configuration.ingress_configuration.app_gateway.availability_zones
@@ -82,16 +89,22 @@ resource "azurerm_application_gateway" "aks_ingress" {
     azurerm_subnet_network_security_group_association.app_gateway
   ]
 }
+resource "azurecaf_name" "azurerm_public_ip_app_gateway" {
+  count = local.app_gateway_enabled ? 1 : 0
 
+  name          = azurecaf_name.azurerm_application_gateway_aks_ingress[0].result
+  resource_type = "azurerm_public_ip"
+  clean_input   = true
+}
 resource "azurerm_public_ip" "app_gateway" {
   count = local.app_gateway_enabled ? 1 : 0
 
-  name                = local.app_gateway_public_ip_name
+  name                = azurecaf_name.azurerm_public_ip_app_gateway[0].result
   resource_group_name = local.existing_vnet_defined ? var.network_configuration.existing_vnet.resource_group_name : azurerm_virtual_network.aks_vnet[0].resource_group_name
   location            = local.existing_vnet_defined ? var.network_configuration.existing_vnet.location : azurerm_virtual_network.aks_vnet[0].location
   sku                 = "Standard"
   allocation_method   = "Static"
-  domain_name_label   = local.app_gateway_public_ip_name
+  domain_name_label   = azurecaf_name.azurerm_public_ip_app_gateway[0].result
   zones               = var.network_configuration.ingress_configuration.app_gateway.availability_zones
 
   lifecycle {

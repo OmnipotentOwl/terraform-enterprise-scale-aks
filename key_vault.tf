@@ -1,7 +1,18 @@
+resource "azurecaf_name" "azurerm_key_vault_aks_customer_managed_keys_encryption" {
+  count = local.customer_managed_keys_enabled ? 1 : 0
+
+  name          = substr(md5(azurecaf_name.azurerm_kubernetes_cluster_k8s.result), 0, 16)
+  resource_type = "azurerm_key_vault"
+  separator     = ""
+  suffixes = [
+    local.environment_sanitized
+  ]
+  clean_input = true
+}
 resource "azurerm_key_vault" "aks_customer_managed_keys_encryption" {
   count = local.customer_managed_keys_enabled ? 1 : 0
 
-  name                        = "kv-${substr(md5(local.aks_name), 0, 16)}-${local.environment_sanitized}"
+  name                        = azurecaf_name.azurerm_key_vault_aks_customer_managed_keys_encryption[0].result
   resource_group_name         = azurerm_resource_group.security.name
   location                    = azurerm_resource_group.security.location
   tenant_id                   = data.azurerm_client_config.current.tenant_id
@@ -11,7 +22,8 @@ resource "azurerm_key_vault" "aks_customer_managed_keys_encryption" {
   purge_protection_enabled    = true
   tags = {
     #tflint-ignore: terraform_deprecated_interpolation
-    "managedBy" = "${local.aks_name}"
+    managedBy = azurecaf_name.azurerm_kubernetes_cluster_k8s.result
+    usage     = "AKS Customer Managed Keys Encryption"
   }
 
   network_acls {
@@ -91,7 +103,7 @@ resource "azurerm_key_vault_access_policy" "aks_customer_managed_keys_encryption
 resource "azurerm_key_vault_key" "aks_customer_managed_keys_encryption" {
   count = local.customer_managed_keys_enabled ? 1 : 0
 
-  name         = "des-${local.aks_name}"
+  name         = "des-${azurecaf_name.azurerm_kubernetes_cluster_k8s.result}"
   key_vault_id = azurerm_key_vault.aks_customer_managed_keys_encryption[0].id
   key_type     = "RSA"
   key_size     = 2048
