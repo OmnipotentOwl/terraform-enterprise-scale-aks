@@ -13,6 +13,8 @@ resource "azapi_resource" "dapr_addon" {
         "global.ha.enabled" = "true"
         #tflint-ignore: terraform_deprecated_interpolation
         "global.mtls.enabled" = "${var.aks_configuration.managed_addons.open_service_mesh ? "false" : "true"}"
+        #tflint-ignore: terraform_deprecated_interpolation
+        "dapr_placement.volumeclaims.storageClassName" = "${local.private_cluster_defined ? local.use_built_in_storage_class ? module.private_storage_class.standard_files_storage_class_name : var.aks_configuration.private_cluster.private_storage.existing_storage_class_name : "azurefile-csi"}"
       }
       releaseTrain = "Stable"
     }
@@ -21,4 +23,9 @@ resource "azapi_resource" "dapr_addon" {
   timeouts {
     create = "20m"
   }
+  depends_on = [
+    azurerm_kubernetes_cluster.k8s,
+    azurerm_kubernetes_cluster_node_pool.worker_pool,
+    module.private_storage_class
+  ]
 }
