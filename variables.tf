@@ -82,8 +82,14 @@ variable "aks_configuration" {
       open_service_mesh      = optional(bool, false)
       oidc_issuer            = optional(bool, false)
       dapr                   = optional(bool, false)
+      keda                   = optional(bool, false)
+      image_cleaner          = optional(bool, false)
       oms_agent_workspace_id = optional(string)
       defender_workspace_id  = optional(string)
+    })
+    storage_profile_configuration = object({
+      blob_driver_enabled = optional(bool, true)
+      disk_driver_version = optional(string, "v1")
     })
     security_options = object({
       enable_host_encryption   = bool
@@ -100,9 +106,15 @@ variable "aks_configuration" {
     managed_addons = {
       open_service_mesh      = true
       dapr                   = false
+      keda                   = false
+      image_cleaner          = false
       oidc_issuer            = false
       oms_agent_workspace_id = null
       defender_workspace_id  = null
+    }
+    storage_profile_configuration = {
+      blob_driver_enabled = true
+      disk_driver_version = "v1"
     }
     security_options = {
       enable_host_encryption   = false

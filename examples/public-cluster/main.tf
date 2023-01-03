@@ -29,11 +29,13 @@ module "cluster" {
     private_cluster = null
     managed_addons = {
       dapr                   = true
+      keda                   = true
       defender_workspace_id  = null
       oidc_issuer            = true
       oms_agent_workspace_id = null
       open_service_mesh      = true
     }
+    storage_profile_configuration = null
     security_options = {
       enable_host_encryption   = true
       enable_self_managed_keys = false
