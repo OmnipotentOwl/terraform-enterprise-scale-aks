@@ -75,6 +75,20 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   open_service_mesh_enabled = var.aks_configuration.managed_addons.open_service_mesh
   oidc_issuer_enabled       = var.aks_configuration.managed_addons.oidc_issuer
   workload_identity_enabled = var.aks_configuration.managed_addons.oidc_issuer
+  image_cleaner_enabled     = var.aks_configuration.managed_addons.image_cleaner
+
+  workload_autoscaler_profile {
+    keda_enabled = var.aks_configuration.managed_addons.keda
+  }
+
+  storage_profile {
+    blob_driver_enabled         = var.aks_configuration.storage_profile_configuration.blob_driver_enabled
+    disk_driver_enabled         = true
+    disk_driver_version         = var.aks_configuration.storage_profile_configuration.disk_driver_version
+    file_driver_enabled         = true
+    snapshot_controller_enabled = true
+  }
+
   key_vault_secrets_provider {
     secret_rotation_enabled = true
   }
