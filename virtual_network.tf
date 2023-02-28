@@ -3,12 +3,11 @@ resource "azurecaf_name" "azurerm_virtual_network_aks_vnet" {
 
   name          = local.workload_name_sanitized
   resource_type = "azurerm_virtual_network"
-  suffixes = [
-    local.environment_sanitized,
-    local.region_name_sanitized,
-    format("%03d", var.deployment_itteration)
-  ]
-  clean_input = true
+  prefixes      = var.global_settings.prefixes
+  suffixes      = var.global_settings.suffixes
+  random_length = var.global_settings.random_length
+  passthrough   = var.global_settings.passthrough
+  clean_input   = true
 }
 resource "azurerm_virtual_network" "aks_vnet" {
   count = local.existing_vnet_defined ? 0 : 1

@@ -4,10 +4,11 @@ resource "azurecaf_name" "azurerm_key_vault_aks_customer_managed_keys_encryption
   name          = substr(md5(azurecaf_name.azurerm_kubernetes_cluster_k8s.result), 0, 16)
   resource_type = "azurerm_key_vault"
   separator     = ""
-  suffixes = [
-    local.environment_sanitized
-  ]
-  clean_input = true
+  prefixes      = var.global_settings.prefixes
+  suffixes      = var.global_settings.suffixes
+  random_length = var.global_settings.random_length
+  passthrough   = var.global_settings.passthrough
+  clean_input   = true
 }
 resource "azurerm_key_vault" "aks_customer_managed_keys_encryption" {
   count = local.customer_managed_keys_enabled ? 1 : 0
