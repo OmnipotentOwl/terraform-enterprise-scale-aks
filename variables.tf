@@ -6,18 +6,14 @@ variable "region_name" {
   type        = string
   description = "(required) region name to provision resources into"
 }
-variable "environment" {
-  type        = string
-  description = "(required) environment name to seed into globaly unique names for resources"
-}
-variable "organization_suffix" {
-  type        = string
-  description = "(required) organizational suffix to seed into globaly unique names for resources"
-}
-variable "deployment_itteration" {
-  type        = number
-  description = "(optional) deployment itteration count to allow for multiple deployments into the same environment"
-  default     = 1
+variable "global_settings" {
+  type = object({
+    prefixes      = optional(list(string), null)
+    suffixes      = optional(list(string), null)
+    random_length = optional(number, null)
+    passthrough   = optional(bool, null)
+  })
+  description = "(required) global settings for the workload"
 }
 variable "container_registry" {
   type = object({
@@ -34,7 +30,6 @@ variable "network_configuration" {
       name                = string
       resource_group_name = string
       location            = string
-
     })
     vnet_configuration = object({
       vnet_address_space = list(string)
@@ -48,7 +43,6 @@ variable "network_configuration" {
         subnet_address_space = list(string)
         availability_zones   = list(string)
       })
-
       internal_loadbalancer_enabled              = bool
       internal_loadbalancer_subnet_address_space = list(string)
     })
@@ -132,6 +126,12 @@ variable "k8s_system_pool_configuration" {
     max_pods_per_node  = number
     subnet_cidr        = list(string)
     availability_zones = list(string)
+    naming_conventions_override = optional(object({
+      prefixes      = optional(list(string), null)
+      suffixes      = optional(list(string), null)
+      random_length = optional(number, null)
+      passthrough   = optional(bool, null)
+    }), null)
   })
   default = {
     max_pods_per_node  = 100
@@ -145,7 +145,8 @@ variable "k8s_system_pool_configuration" {
   description = "System pool configuration to be created in the AKS cluster"
 }
 variable "k8s_spot_pool_configurations" {
-  type = list(object({
+  type = map(object({
+    name               = string
     pool_sku           = string
     pool_min_size      = optional(number, 0)
     pool_max_size      = optional(number, 3)
@@ -156,12 +157,19 @@ variable "k8s_spot_pool_configurations" {
     k8s_labels         = optional(map(string), {})
     k8s_taints         = optional(list(string), [])
     availability_zones = list(string)
+    naming_conventions_override = optional(object({
+      prefixes      = optional(list(string), [])
+      suffixes      = optional(list(string), [])
+      random_length = optional(number, null)
+      passthrough   = optional(bool, null)
+    }), null)
   }))
-  default     = []
-  description = "List of spot worker pools to be created in the AKS cluster"
+  default     = {}
+  description = "Map of spot worker pools to be created in the AKS cluster"
 }
 variable "k8s_worker_pool_configurations" {
-  type = list(object({
+  type = map(object({
+    name               = string
     pool_sku           = string
     pool_min_size      = optional(number, 0)
     pool_max_size      = optional(number, 3)
@@ -171,7 +179,13 @@ variable "k8s_worker_pool_configurations" {
     k8s_labels         = optional(map(string), {})
     k8s_taints         = optional(list(string), [])
     availability_zones = list(string)
+    naming_conventions_override = optional(object({
+      prefixes      = optional(list(string), [])
+      suffixes      = optional(list(string), [])
+      random_length = optional(number, null)
+      passthrough   = optional(bool, null)
+    }), null)
   }))
-  default     = []
-  description = "List of worker pools to be created in the AKS cluster"
+  default     = {}
+  description = "Map of worker pools to be created in the AKS cluster"
 }

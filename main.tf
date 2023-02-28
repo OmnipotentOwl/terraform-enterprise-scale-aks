@@ -1,8 +1,6 @@
 locals {
   workload_name_sanitized = lower(var.workload_name)
   region_name_sanitized   = lower(var.region_name)
-  environment_sanitized   = lower(var.environment)
-  org_suffix_sanitized    = lower(var.organization_suffix)
 
   aks_dns_name_prefix           = "${azurecaf_name.azurerm_kubernetes_cluster_k8s.result}-dns"
   container_registry_defined    = can(var.container_registry.id) ? true : false

@@ -1,13 +1,11 @@
 resource "azurecaf_name" "azurerm_kubernetes_cluster_k8s" {
   name          = local.workload_name_sanitized
   resource_type = "azurerm_kubernetes_cluster"
-  suffixes = [
-    local.org_suffix_sanitized,
-    local.environment_sanitized,
-    local.region_name_sanitized,
-    format("%03d", var.deployment_itteration)
-  ]
-  clean_input = true
+  prefixes      = var.global_settings.prefixes
+  suffixes      = var.global_settings.suffixes
+  random_length = var.global_settings.random_length
+  passthrough   = var.global_settings.passthrough
+  clean_input   = true
 }
 #tfsec:ignore:azure-container-logging
 resource "azurerm_kubernetes_cluster" "k8s" {
@@ -105,11 +103,21 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     ]
   }
 }
+resource "azurecaf_name" "azurerm_kubernetes_cluster_node_pool_spot_pool" {
+  for_each = local.spot_pool_configurations
 
+  name          = "spotpool${each.value.name}"
+  resource_type = "general_safe"
+  prefixes      = try(coalesce(each.value.naming_conventions_override.prefixes, var.global_settings.prefixes), null)
+  suffixes      = try(coalesce(each.value.naming_conventions_override.suffixes, var.global_settings.suffixes), null)
+  random_length = try(coalesce(each.value.naming_conventions_override.random_length, var.global_settings.random_length), null)
+  passthrough   = try(coalesce(each.value.naming_conventions_override.passthrough, var.global_settings.passthrough), null)
+  clean_input   = true
+}
 resource "azurerm_kubernetes_cluster_node_pool" "spot_pool" {
   for_each = local.spot_pool_configurations
 
-  name                  = "spotpool${each.key}"
+  name                  = azurecaf_name.azurerm_kubernetes_cluster_node_pool_spot_pool[each.key].result
   kubernetes_cluster_id = azurerm_kubernetes_cluster.k8s.id
   mode                  = "User"
   priority              = "Spot"
@@ -139,11 +147,21 @@ resource "azurerm_kubernetes_cluster_node_pool" "spot_pool" {
     ]
   }
 }
+resource "azurecaf_name" "azurerm_kubernetes_cluster_node_pool_worker_pool" {
+  for_each = local.worker_pool_configurations
 
+  name          = "workerpool${each.value.name}"
+  resource_type = "general_safe"
+  prefixes      = try(coalesce(each.value.naming_conventions_override.prefixes, var.global_settings.prefixes), null)
+  suffixes      = try(coalesce(each.value.naming_conventions_override.suffixes, var.global_settings.suffixes), null)
+  random_length = try(coalesce(each.value.naming_conventions_override.random_length, var.global_settings.random_length), null)
+  passthrough   = try(coalesce(each.value.naming_conventions_override.passthrough, var.global_settings.passthrough), null)
+  clean_input   = true
+}
 resource "azurerm_kubernetes_cluster_node_pool" "worker_pool" {
   for_each = local.worker_pool_configurations
 
-  name                   = "workerpool${each.key}"
+  name                   = azurecaf_name.azurerm_kubernetes_cluster_node_pool_worker_pool[each.key].result
   kubernetes_cluster_id  = azurerm_kubernetes_cluster.k8s.id
   mode                   = "User"
   vm_size                = each.value.pool_sku

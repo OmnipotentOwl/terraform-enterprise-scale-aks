@@ -1,14 +1,13 @@
 resource "azurecaf_name" "azurerm_resource_group_network" {
   count = local.existing_vnet_defined ? 0 : 1
 
-  name          = local.workload_name_sanitized
+  name          = "network"
   resource_type = "azurerm_resource_group"
-  suffixes = [
-    "network",
-    local.environment_sanitized,
-    local.region_name_sanitized,
-    format("%03d", var.deployment_itteration)
-  ]
+  prefixes      = var.global_settings.prefixes
+  suffixes      = var.global_settings.suffixes
+  random_length = var.global_settings.random_length
+  passthrough   = var.global_settings.passthrough
+  clean_input   = true
 }
 resource "azurerm_resource_group" "network" {
   count = local.existing_vnet_defined ? 0 : 1
@@ -23,15 +22,13 @@ resource "azurerm_resource_group" "network" {
   }
 }
 resource "azurecaf_name" "azurerm_resource_group_cluster" {
-  name          = local.workload_name_sanitized
+  name          = "cluster"
   resource_type = "azurerm_resource_group"
-  suffixes = [
-    "cluster",
-    local.environment_sanitized,
-    local.region_name_sanitized,
-    format("%03d", var.deployment_itteration)
-  ]
-  clean_input = true
+  prefixes      = var.global_settings.prefixes
+  suffixes      = var.global_settings.suffixes
+  random_length = var.global_settings.random_length
+  passthrough   = var.global_settings.passthrough
+  clean_input   = true
 }
 resource "azurerm_resource_group" "cluster" {
   name     = azurecaf_name.azurerm_resource_group_cluster.result
@@ -44,15 +41,13 @@ resource "azurerm_resource_group" "cluster" {
   }
 }
 resource "azurecaf_name" "azurerm_resource_group_security" {
-  name          = local.workload_name_sanitized
+  name          = "security"
   resource_type = "azurerm_resource_group"
-  suffixes = [
-    "security",
-    local.environment_sanitized,
-    local.region_name_sanitized,
-    format("%03d", var.deployment_itteration)
-  ]
-  clean_input = true
+  prefixes      = var.global_settings.prefixes
+  suffixes      = var.global_settings.suffixes
+  random_length = var.global_settings.random_length
+  passthrough   = var.global_settings.passthrough
+  clean_input   = true
 }
 resource "azurerm_resource_group" "security" {
   name     = azurecaf_name.azurerm_resource_group_security.result
