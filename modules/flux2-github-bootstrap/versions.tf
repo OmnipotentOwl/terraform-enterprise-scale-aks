@@ -1,5 +1,4 @@
 terraform {
-  required_version = ">=0.13"
   required_providers {
     github = {
       source  = "integrations/github"
@@ -19,7 +18,8 @@ terraform {
     }
     tls = {
       source  = "hashicorp/tls"
-      version = "3.1.0"
+      version = ">= 3.1.0"
     }
   }
+  required_version = ">= 0.13.0"
 }
