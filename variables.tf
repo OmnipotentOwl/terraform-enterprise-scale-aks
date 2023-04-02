@@ -15,13 +15,13 @@ variable "global_settings" {
   })
   description = "(required) global settings for the workload"
 }
-variable "container_registry" {
-  type = object({
+variable "container_registies" {
+  type = map(object({
     id                  = string
     name                = string
     resource_group_name = string
-  })
-  description = "(optional) container registry object to pull images from using the AKS cluster identity"
+  }))
+  description = "(optional) container registry objects to pull images from using the AKS cluster identity"
 }
 variable "network_configuration" {
   type = object({
