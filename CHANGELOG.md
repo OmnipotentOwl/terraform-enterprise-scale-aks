@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0](https://github.com/OmnipotentOwl/terraform-azurerm-enterprise-scale-aks/compare/v1.1.1...v1.2.0) (2023-04-08)
+
+
+### Features
+
+* Add keda, image cleaner, and storage profile configuration support ([1cc45a0](https://github.com/OmnipotentOwl/terraform-azurerm-enterprise-scale-aks/commit/1cc45a00dfe92d487512c4b294aff79311421849))
+
 ### [1.1.1](https://github.com/OmnipotentOwl/terraform-azurerm-enterprise-scale-aks/compare/v1.1.0...v1.1.1) (2022-12-23)
 
 
