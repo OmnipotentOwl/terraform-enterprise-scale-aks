@@ -2,19 +2,19 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">=3.36"
+      version = ">= 3.65.0"
     }
     azuread = {
       source  = "hashicorp/azuread"
-      version = ">= 2.5"
+      version = ">= 2.5.0"
     }
     random = {
       source  = "hashicorp/random"
-      version = ">= 3.0"
+      version = ">= 3.0.0"
     }
     azapi = {
       source  = "azure/azapi"
-      version = ">=0.6"
+      version = ">= 0.6.0"
     }
     github = {
       source  = "integrations/github"

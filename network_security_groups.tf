@@ -126,20 +126,20 @@ resource "azurerm_subnet_network_security_group_association" "ingress_ilb" {
   subnet_id                 = azurerm_subnet.ingress_ilb[0].id
   network_security_group_id = azurerm_network_security_group.ingress_ilb[0].id
 }
-resource "azurecaf_name" "azurerm_network_security_group_aks_system_pool" {
-  name          = azurerm_subnet.aks_system_pool.name
+resource "azurecaf_name" "azurerm_network_security_group_aks_system_pool_nodes" {
+  name          = var.k8s_system_pool_configuration.node_subnet_cidr != null ? azurerm_subnet.aks_system_pool_nodes[0].name : var.vnets[var.network_configuration.vnet_key].subnets[var.k8s_system_pool_configuration.node_subnet_key].name
   resource_type = "azurerm_network_security_group"
   suffixes = [
     local.region_name_sanitized
   ]
   clean_input = true
 }
-resource "azurerm_network_security_group" "aks_system_pool" {
-  name                = azurecaf_name.azurerm_network_security_group_aks_system_pool.result
+resource "azurerm_network_security_group" "aks_system_pool_nodes" {
+  name                = azurecaf_name.azurerm_network_security_group_aks_system_pool_nodes.result
   location            = local.region_name_sanitized
-  resource_group_name = azurerm_subnet.aks_system_pool.resource_group_name
+  resource_group_name = var.k8s_system_pool_configuration.node_subnet_cidr != null ? azurerm_subnet.aks_system_pool_nodes[0].resource_group_name : var.vnets[var.network_configuration.vnet_key].subnets[var.k8s_system_pool_configuration.node_subnet_key].resource_group_name
 }
-resource "azurerm_network_security_rule" "aks_system_pool_deny_ssh_inbound" {
+resource "azurerm_network_security_rule" "aks_system_pool_nodes_deny_ssh_inbound" {
   name                        = "DenySshInBound"
   description                 = "No SSH access allowed to nodes."
   priority                    = 100
@@ -150,25 +150,25 @@ resource "azurerm_network_security_rule" "aks_system_pool_deny_ssh_inbound" {
   destination_port_range      = "22"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = azurerm_network_security_group.aks_system_pool.resource_group_name
-  network_security_group_name = azurerm_network_security_group.aks_system_pool.name
+  resource_group_name         = azurerm_network_security_group.aks_system_pool_nodes.resource_group_name
+  network_security_group_name = azurerm_network_security_group.aks_system_pool_nodes.name
 }
-resource "azurecaf_name" "azurerm_network_security_group_aks_spot_pool" {
+resource "azurecaf_name" "azurerm_network_security_group_aks_spot_pool_nodes" {
   for_each = local.spot_pool_configurations
 
-  name          = azurerm_subnet.aks_spot_pool[each.key].name
+  name          = each.value.node_subnet_cidr != null ? azurerm_subnet.aks_spot_pool_nodes[each.key].name : var.vnets[var.network_configuration.vnet_key].subnets[each.value.node_subnet_key].name
   resource_type = "azurerm_network_security_group"
   suffixes = [
     local.region_name_sanitized
   ]
   clean_input = true
 }
-resource "azurerm_network_security_group" "aks_spot_pool" {
+resource "azurerm_network_security_group" "aks_spot_pool_nodes" {
   for_each = local.spot_pool_configurations
 
-  name                = azurecaf_name.azurerm_network_security_group_aks_spot_pool[each.key].result
+  name                = azurecaf_name.azurerm_network_security_group_aks_spot_pool_nodes[each.key].result
   location            = local.region_name_sanitized
-  resource_group_name = azurerm_subnet.aks_spot_pool[each.key].resource_group_name
+  resource_group_name = each.value.node_subnet_cidr != null ? azurerm_subnet.aks_spot_pool_nodes[each.key].resource_group_name : var.vnets[var.network_configuration.vnet_key].subnets[each.value.node_subnet_key].resource_group_name
 }
 resource "azurerm_network_security_rule" "aks_spot_pool_deny_ssh_inbound" {
   for_each = local.spot_pool_configurations
@@ -183,30 +183,30 @@ resource "azurerm_network_security_rule" "aks_spot_pool_deny_ssh_inbound" {
   destination_port_range      = "22"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = azurerm_network_security_group.aks_spot_pool[each.key].resource_group_name
-  network_security_group_name = azurerm_network_security_group.aks_spot_pool[each.key].name
+  resource_group_name         = azurerm_network_security_group.aks_spot_pool_nodes[each.key].resource_group_name
+  network_security_group_name = azurerm_network_security_group.aks_spot_pool_nodes[each.key].name
 }
-resource "azurerm_subnet_network_security_group_association" "aks_spot_pool" {
+resource "azurerm_subnet_network_security_group_association" "aks_spot_pool_nodes" {
   for_each = local.spot_pool_configurations
 
-  subnet_id                 = azurerm_subnet.aks_spot_pool[each.key].id
-  network_security_group_id = azurerm_network_security_group.aks_spot_pool[each.key].id
+  subnet_id                 = each.value.node_subnet_cidr != null ? azurerm_subnet.aks_spot_pool_nodes[each.key].id : var.vnets[var.network_configuration.vnet_key].subnets[each.value.node_subnet_key].id
+  network_security_group_id = azurerm_network_security_group.aks_system_pool_nodes[each.key].id
 }
-resource "azurecaf_name" "azurerm_network_security_group_aks_worker_pool" {
+resource "azurecaf_name" "azurerm_network_security_group_aks_worker_pool_nodes" {
   for_each = local.worker_pool_configurations
 
-  name          = azurerm_subnet.aks_worker_pool[each.key].name
+  name          = each.value.node_subnet_cidr != null ? azurerm_subnet.aks_worker_pool_nodes[each.key].name : var.vnets[var.network_configuration.vnet_key].subnets[each.value.node_subnet_key].name
   resource_type = "azurerm_network_security_group"
   suffixes = [
     local.region_name_sanitized
   ]
 }
-resource "azurerm_network_security_group" "aks_worker_pool" {
+resource "azurerm_network_security_group" "aks_worker_pool_nodes" {
   for_each = local.worker_pool_configurations
 
-  name                = azurecaf_name.azurerm_network_security_group_aks_worker_pool[each.key].result
+  name                = azurecaf_name.azurerm_network_security_group_aks_worker_pool_nodes[each.key].result
   location            = local.region_name_sanitized
-  resource_group_name = azurerm_subnet.aks_worker_pool[each.key].resource_group_name
+  resource_group_name = each.value.node_subnet_cidr != null ? azurerm_subnet.aks_worker_pool_nodes[each.key].resource_group_name : var.vnets[var.network_configuration.vnet_key].subnets[each.value.node_subnet_key].resource_group_name
 }
 resource "azurerm_network_security_rule" "aks_worker_pool_deny_ssh_inbound" {
   for_each = local.worker_pool_configurations
@@ -221,12 +221,12 @@ resource "azurerm_network_security_rule" "aks_worker_pool_deny_ssh_inbound" {
   destination_port_range      = "22"
   source_address_prefix       = "*"
   destination_address_prefix  = "*"
-  resource_group_name         = azurerm_network_security_group.aks_worker_pool[each.key].resource_group_name
-  network_security_group_name = azurerm_network_security_group.aks_worker_pool[each.key].name
+  resource_group_name         = azurerm_network_security_group.aks_worker_pool_nodes[each.key].resource_group_name
+  network_security_group_name = azurerm_network_security_group.aks_worker_pool_nodes[each.key].name
 }
 resource "azurerm_subnet_network_security_group_association" "aks_worker_pool" {
   for_each = local.worker_pool_configurations
 
-  subnet_id                 = azurerm_subnet.aks_worker_pool[each.key].id
-  network_security_group_id = azurerm_network_security_group.aks_worker_pool[each.key].id
+  subnet_id                 = each.value.node_subnet_cidr != null ? azurerm_subnet.aks_worker_pool_nodes[each.key].id : var.vnets[var.network_configuration.vnet_key].subnets[each.value.node_subnet_key].id
+  network_security_group_id = azurerm_network_security_group.aks_worker_pool_nodes[each.key].id
 }

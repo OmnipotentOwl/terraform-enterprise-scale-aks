@@ -1,5 +1,5 @@
 resource "azurecaf_name" "azurerm_user_assigned_identity_cluster_control_plane" {
-  count = local.private_cluster_defined ? 1 : 0
+  count = local.use_user_assigned_managed_identity ? 1 : 0
 
   name          = azurecaf_name.azurerm_kubernetes_cluster_k8s.result
   resource_type = "azurerm_user_assigned_identity"
@@ -9,7 +9,7 @@ resource "azurecaf_name" "azurerm_user_assigned_identity_cluster_control_plane" 
   clean_input = true
 }
 resource "azurerm_user_assigned_identity" "cluster_control_plane" {
-  count = local.private_cluster_defined ? 1 : 0
+  count = local.use_user_assigned_managed_identity ? 1 : 0
 
   name                = azurecaf_name.azurerm_user_assigned_identity_cluster_control_plane[0].result
   resource_group_name = azurerm_resource_group.security.name
@@ -60,7 +60,7 @@ resource "azurerm_role_assignment" "app_gateway_controller_app_gateway_contribut
 resource "azurerm_role_assignment" "app_gateway_controller_app_gateway_rg_reader" {
   count = local.app_gateway_enabled ? 1 : 0
 
-  scope                = local.existing_vnet_defined ? var.network_configuration.existing_vnet.id : azurerm_resource_group.network[0].id
+  scope                = local.existing_vnet_defined ? var.vnets[var.network_configuration.vnet_key].id : azurerm_resource_group.network[0].id
   role_definition_name = "Reader"
   principal_id         = azurerm_user_assigned_identity.app_gateway_controller[0].principal_id
 }
@@ -72,21 +72,21 @@ resource "azurerm_role_assignment" "app_gateway_controller_app_gateway_secrets_m
   principal_id         = azurerm_user_assigned_identity.app_gateway_controller[0].principal_id
 }
 resource "azurerm_role_assignment" "cluster_control_plane_vnet_dns_zone_contributor" {
-  count = local.private_cluster_defined ? 1 : 0
+  count = local.private_cluster_enabled ? 1 : 0
 
-  scope                = local.existing_vnet_defined ? var.network_configuration.existing_vnet.id : azurerm_virtual_network.aks_vnet[0].id
+  scope                = local.existing_vnet_defined ? var.vnets[var.network_configuration.vnet_key].id : azurerm_virtual_network.aks_vnet[0].id
   role_definition_name = "Private DNS Zone Contributor"
   principal_id         = azurerm_user_assigned_identity.cluster_control_plane[0].principal_id
 }
 resource "azurerm_role_assignment" "cluster_control_plane_private_zone_dns_zone_contributor" {
-  count = local.private_cluster_defined ? 1 : 0
+  count = local.private_cluster_enabled ? 1 : 0
 
   scope                = var.aks_configuration.private_cluster.private_dns_zone_id
   role_definition_name = "Private DNS Zone Contributor"
   principal_id         = azurerm_user_assigned_identity.cluster_control_plane[0].principal_id
 }
 resource "azurerm_role_assignment" "oms_agent_monitoring_metrics_publisher" {
-  count = can(var.aks_configuration.managed_addons.oms_agent_workspace_id) && (var.aks_configuration.managed_addons.oms_agent_workspace_id != null && var.aks_configuration.managed_addons.oms_agent_workspace_id != "") ? 1 : 0
+  count = var.aks_configuration.oms_agent != null ? 1 : 0
 
   scope                = azurerm_kubernetes_cluster.k8s.id
   role_definition_name = "Monitoring Metrics Publisher"

@@ -38,3 +38,11 @@ output "app_gateway" {
   value       = local.app_gateway_enabled ? azurerm_application_gateway.aks_ingress[0] : null
   description = "application gateway object created by module"
 }
+output "kubernetes_admin_config" {
+  value       = azurerm_kubernetes_cluster.k8s.kube_admin_config[0]
+  description = "kubernetes admin config object created by module"
+}
+output "kubernetes_config" {
+  value       = azurerm_kubernetes_cluster.k8s.kube_config[0]
+  description = "kubernetes config object created by module"
+}

@@ -1,14 +1,18 @@
-data "flux_install" "main" {
-  target_path = local.target_path
+resource "flux_bootstrap_git" "this" {
+  path = local.target_path
   components_extra = [
     "image-reflector-controller",
     "image-automation-controller"
   ]
-}
+  registry = var.flux_configuration.registry
+  version  = var.flux_configuration.version
+  toleration_keys = setunion([
+    "CriticalAddonsOnly"
+  ], var.flux_configuration.additional_tolerations)
 
-data "flux_sync" "main" {
-  target_path = local.target_path
-  url         = "ssh://git@github.com/${var.github_configuration.organization_name}/${var.github_configuration.repository_name}.git"
-  branch      = var.github_configuration.branch_name
-  patch_names = keys(local.flux_patches)
+  kustomization_override = coalesce(var.flux_configuration.kustomization_overrides, local.built_in_kustomization)
+
+  depends_on = [
+    github_repository_deploy_key.this
+  ]
 }
