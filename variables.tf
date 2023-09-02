@@ -61,24 +61,15 @@ variable "aks_configuration" {
       private_dns_zone_id  = optional(string, null)
       private_dns_zone_key = optional(string, null)
       enable_public_fqdn   = optional(bool, false)
-      private_endpoint_subnet = object({
+      private_endpoint_subnet = optional(object({
         id                  = string
         name                = string
         resource_group_name = string
-      })
-      private_storage = object({
-        enable_built_in_storage_class = bool
-        enable_zonal_replication      = bool
-        existing_storage_class_name   = string
-      })
+      }), null)
     }), null)
     managed_addons = object({
-      open_service_mesh = optional(bool, false)
-      oidc_issuer       = optional(bool, false)
-      dapr = optional(object({
-        enabled                  = optional(bool, false)
-        additional_configuration = optional(map(string), {})
-      }), null)
+      open_service_mesh       = optional(bool, false)
+      oidc_issuer             = optional(bool, false)
       keda                    = optional(bool, false)
       image_cleaner           = optional(bool, false)
       vertical_pod_autoscaler = optional(bool, false)
@@ -124,7 +115,6 @@ variable "aks_configuration" {
     cluster_identity_system_managed = optional(bool, true)
   })
   default = {
-    private_cluster = null
     managed_addons = {
       open_service_mesh = false
       keda              = false

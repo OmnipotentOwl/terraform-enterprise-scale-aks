@@ -10,11 +10,9 @@ locals {
   app_gateway_enabled                = can(var.network_configuration.ingress_configuration.app_gateway.subnet_address_space) ? true : false
   use_user_assigned_managed_identity = !var.aks_configuration.cluster_identity_system_managed
   internal_loadbalancer_enabled      = can(var.network_configuration.ingress_configuration.internal_loadbalancer_enabled) ? var.network_configuration.ingress_configuration.internal_loadbalancer_enabled : false
-  use_built_in_storage_class         = can(var.aks_configuration.private_cluster.private_storage.enable_built_in_storage_class) ? var.aks_configuration.private_cluster.private_storage.enable_built_in_storage_class : false
-  open_service_mesh_enabled          = try(var.aks_configuration.managed_addons.open_service_mesh != null, false) ? var.aks_configuration.managed_addons.open_service_mesh : false
-  service_mesh_profile_exists        = try(var.aks_configuration.service_mesh_profile != null, false) ? true : false
-  service_mesh_profile_configured    = local.service_mesh_profile_exists && var.aks_configuration.service_mesh_profile.mode != null && var.aks_configuration.service_mesh_profile.mode != "None" ? true : false
-  service_mesh_enabled               = local.open_service_mesh_enabled || local.service_mesh_profile_configured
+  #open_service_mesh_enabled          = try(var.aks_configuration.managed_addons.open_service_mesh != null, false) ? var.aks_configuration.managed_addons.open_service_mesh : false
+  #service_mesh_profile_exists        = try(var.aks_configuration.service_mesh_profile != null, false) ? true : false
+  #service_mesh_profile_configured    = local.service_mesh_profile_exists && var.aks_configuration.service_mesh_profile.mode != null && var.aks_configuration.service_mesh_profile.mode != "None" ? true : false
 
   spot_pool_configurations   = { for k, v in var.k8s_spot_pool_configurations : k => v }
   worker_pool_configurations = { for k, v in var.k8s_worker_pool_configurations : k => v }

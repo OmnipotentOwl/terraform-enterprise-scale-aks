@@ -14,8 +14,8 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_flux"></a> [flux](#provider\_flux) | 1.0.1 |
-| <a name="provider_github"></a> [github](#provider\_github) | 5.32.0 |
+| <a name="provider_flux"></a> [flux](#provider\_flux) | 1.1.0 |
+| <a name="provider_github"></a> [github](#provider\_github) | 5.34.0 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.4 |
 
 ## Modules
