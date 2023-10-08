@@ -139,7 +139,7 @@ variable "aks_configuration" {
 variable "k8s_system_pool_configuration" {
   type = object({
     pool_sku           = string
-    pool_min_size      = optional(number, 0)
+    pool_min_size      = optional(number, 1)
     pool_max_size      = optional(number, 3)
     os_disk_size_gb    = number
     os_sku             = optional(string, null)
@@ -159,7 +159,7 @@ variable "k8s_system_pool_configuration" {
     max_pods_per_node  = 100
     os_disk_size_gb    = 45
     pool_max_size      = 2
-    pool_min_size      = 0
+    pool_min_size      = 1
     pool_sku           = "Standard_D4as_v4"
     node_subnet_cidr   = []
     availability_zones = []
