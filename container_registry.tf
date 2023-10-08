@@ -1,7 +1,7 @@
 resource "azurerm_role_assignment" "aks_sp_container_registry" {
-  for_each = { for key in var.aks_configuration.container_registry_keys : key => key }
+  for_each = var.aks_configuration.container_registries
 
-  scope                = var.container_registries[each.key].id
+  scope                = each.value.id != null ? each.value.id : each.value.lz_key != null ? var.container_registries[each.value.lz_key][each.value.key].id : var.container_registries[each.value.key].id
   role_definition_name = "AcrPull"
   principal_id         = azurerm_kubernetes_cluster.k8s.kubelet_identity[0].object_id
 }

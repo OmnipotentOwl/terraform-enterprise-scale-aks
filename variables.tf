@@ -74,7 +74,11 @@ variable "aks_configuration" {
       image_cleaner           = optional(bool, false)
       vertical_pod_autoscaler = optional(bool, false)
     })
-    container_registry_keys = optional(set(string), [])
+    container_registries = optional(map(object({
+      key    = optional(string, null)
+      lz_key = optional(string, null)
+      id     = optional(string, null)
+    })), {})
     oms_agent = optional(object({
       log_analytics_workspace_id      = optional(string, null)
       msi_auth_for_monitoring_enabled = optional(bool, false)
@@ -278,11 +282,7 @@ variable "user_defined_routes" {
   default     = null
 }
 variable "container_registries" {
-  type = map(object({
-    id                  = string
-    name                = string
-    resource_group_name = string
-  }))
+  type        = map(any)
   description = "Map of container registries available to the module"
   default     = {}
 }
