@@ -137,7 +137,7 @@ resource "azurecaf_name" "azurerm_network_security_group_aks_system_pool_nodes" 
 resource "azurerm_network_security_group" "aks_system_pool_nodes" {
   name                = azurecaf_name.azurerm_network_security_group_aks_system_pool_nodes.result
   location            = local.region_name_sanitized
-  resource_group_name = var.k8s_system_pool_configuration.node_subnet_cidr != null ? azurerm_subnet.aks_system_pool_nodes[0].resource_group_name : var.vnets[var.network_configuration.vnet_key].subnets[var.k8s_system_pool_configuration.node_subnet_key].resource_group_name
+  resource_group_name = var.k8s_system_pool_configuration.node_subnet_cidr != null ? azurerm_subnet.aks_system_pool_nodes[0].resource_group_name : var.vnets[var.network_configuration.vnet_key].resource_group_name
 }
 resource "azurerm_network_security_rule" "aks_system_pool_nodes_deny_ssh_inbound" {
   name                        = "DenySshInBound"
@@ -168,7 +168,7 @@ resource "azurerm_network_security_group" "aks_spot_pool_nodes" {
 
   name                = azurecaf_name.azurerm_network_security_group_aks_spot_pool_nodes[each.key].result
   location            = local.region_name_sanitized
-  resource_group_name = each.value.node_subnet_cidr != null ? azurerm_subnet.aks_spot_pool_nodes[each.key].resource_group_name : var.vnets[var.network_configuration.vnet_key].subnets[each.value.node_subnet_key].resource_group_name
+  resource_group_name = each.value.node_subnet_cidr != null ? azurerm_subnet.aks_spot_pool_nodes[each.key].resource_group_name : var.vnets[var.network_configuration.vnet_key].resource_group_name
 }
 resource "azurerm_network_security_rule" "aks_spot_pool_deny_ssh_inbound" {
   for_each = local.spot_pool_configurations
@@ -206,7 +206,7 @@ resource "azurerm_network_security_group" "aks_worker_pool_nodes" {
 
   name                = azurecaf_name.azurerm_network_security_group_aks_worker_pool_nodes[each.key].result
   location            = local.region_name_sanitized
-  resource_group_name = each.value.node_subnet_cidr != null ? azurerm_subnet.aks_worker_pool_nodes[each.key].resource_group_name : var.vnets[var.network_configuration.vnet_key].subnets[each.value.node_subnet_key].resource_group_name
+  resource_group_name = each.value.node_subnet_cidr != null ? azurerm_subnet.aks_worker_pool_nodes[each.key].resource_group_name : var.vnets[var.network_configuration.vnet_key].resource_group_name
 }
 resource "azurerm_network_security_rule" "aks_worker_pool_deny_ssh_inbound" {
   for_each = local.worker_pool_configurations
