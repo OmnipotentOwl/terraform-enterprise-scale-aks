@@ -14,8 +14,8 @@ resource "azurerm_key_vault" "aks_customer_managed_keys_encryption" {
   count = local.customer_managed_keys_enabled ? 1 : 0
 
   name                        = azurecaf_name.azurerm_key_vault_aks_customer_managed_keys_encryption[0].result
-  resource_group_name         = azurerm_resource_group.security.name
-  location                    = azurerm_resource_group.security.location
+  resource_group_name         = local.security_resource_group.name
+  location                    = local.security_resource_group.location
   tenant_id                   = data.azurerm_client_config.current.tenant_id
   sku_name                    = "premium"
   enabled_for_disk_encryption = true

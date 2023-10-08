@@ -16,6 +16,7 @@ locals {
 
   spot_pool_configurations   = { for k, v in var.k8s_spot_pool_configurations : k => v }
   worker_pool_configurations = { for k, v in var.k8s_worker_pool_configurations : k => v }
+  security_resource_group    = var.aks_configuration.security_options.security_resource_group_key != null ? var.resource_groups[var.aks_configuration.security_options.security_resource_group_key] : azurerm_resource_group.security[0]
 }
 
 data "azurerm_subscription" "current" {}

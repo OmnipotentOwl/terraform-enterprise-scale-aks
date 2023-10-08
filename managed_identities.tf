@@ -12,8 +12,8 @@ resource "azurerm_user_assigned_identity" "cluster_control_plane" {
   count = local.use_user_assigned_managed_identity ? 1 : 0
 
   name                = azurecaf_name.azurerm_user_assigned_identity_cluster_control_plane[0].result
-  resource_group_name = azurerm_resource_group.security.name
-  location            = azurerm_resource_group.security.location
+  resource_group_name = local.security_resource_group.name
+  location            = local.security_resource_group.location
 }
 resource "azurecaf_name" "azurerm_user_assigned_identity_app_gateway_secrets" {
   count = local.app_gateway_enabled ? 1 : 0
@@ -29,8 +29,8 @@ resource "azurerm_user_assigned_identity" "app_gateway_secrets" {
   count = local.app_gateway_enabled ? 1 : 0
 
   name                = azurecaf_name.azurerm_user_assigned_identity_app_gateway_secrets[0].result
-  resource_group_name = azurerm_resource_group.security.name
-  location            = azurerm_resource_group.security.location
+  resource_group_name = local.security_resource_group.name
+  location            = local.security_resource_group.location
 }
 resource "azurecaf_name" "azurerm_user_assigned_identity_app_gateway_controller" {
   count = local.app_gateway_enabled ? 1 : 0
@@ -46,8 +46,8 @@ resource "azurerm_user_assigned_identity" "app_gateway_controller" {
   count = local.app_gateway_enabled ? 1 : 0
 
   name                = azurecaf_name.azurerm_user_assigned_identity_app_gateway_controller[0].result
-  resource_group_name = azurerm_resource_group.security.name
-  location            = azurerm_resource_group.security.location
+  resource_group_name = local.security_resource_group.name
+  location            = local.security_resource_group.location
 }
 
 resource "azurerm_role_assignment" "app_gateway_controller_app_gateway_contributor" {

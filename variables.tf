@@ -101,9 +101,10 @@ variable "aks_configuration" {
       snapshot_controller_enabled = true
     })
     security_options = object({
-      enable_host_encryption   = bool
-      enable_self_managed_keys = bool
-      run_command_enabled      = optional(bool, null)
+      enable_host_encryption      = bool
+      enable_self_managed_keys    = bool
+      security_resource_group_key = optional(string, null)
+      run_command_enabled         = optional(bool, null)
       api_server_access_profile = optional(object({
         authorized_ip_ranges     = optional(list(string), null)
         subnet_cidr              = optional(string, null)
@@ -284,5 +285,10 @@ variable "user_defined_routes" {
 variable "container_registries" {
   type        = map(any)
   description = "Map of container registries available to the module"
+  default     = {}
+}
+variable "resource_groups" {
+  type        = map(any)
+  description = "Map of resource groups available to the module"
   default     = {}
 }
