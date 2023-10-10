@@ -37,7 +37,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | name of the cluster to bootstrap in cloud provider | `string` | n/a | yes |
 | <a name="input_flux_configuration"></a> [flux\_configuration](#input\_flux\_configuration) | configuration for flux2 | <pre>object({<br>    version                 = optional(string, null)<br>    registry                = optional(string, null)<br>    additional_tolerations  = optional(list(string), [])<br>    kustomization_overrides = optional(string, null)<br>  })</pre> | n/a | yes |
-| <a name="input_github_configuration"></a> [github\_configuration](#input\_github\_configuration) | configuration for github connection | <pre>object({<br>    organization_name = string<br>    repository_name   = string<br>    branch_name       = string<br>  })</pre> | `null` | no |
+| <a name="input_github_configuration"></a> [github\_configuration](#input\_github\_configuration) | configuration for github connection | <pre>object({<br>    organization_name = string<br>    repository_name   = string<br>    branch_name       = optional(string, "main")<br>  })</pre> | `null` | no |
 | <a name="input_kubernetes_configuration"></a> [kubernetes\_configuration](#input\_kubernetes\_configuration) | configuration for kubernetes cluster | <pre>object({<br>    host                   = string<br>    client_certificate     = optional(string, null)<br>    client_key             = optional(string, null)<br>    cluster_ca_certificate = optional(string, null)<br>  })</pre> | n/a | yes |
 
 ## Outputs

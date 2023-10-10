@@ -15,7 +15,7 @@ variable "github_configuration" {
   type = object({
     organization_name = string
     repository_name   = string
-    branch_name       = string
+    branch_name       = optional(string, "main")
   })
   default     = null
   description = "configuration for github connection"
