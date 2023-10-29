@@ -13,7 +13,3 @@ provider "flux" {
     }
   }
 }
-
-provider "github" {
-  owner = var.github_configuration.organization_name
-}
