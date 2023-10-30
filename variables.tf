@@ -275,6 +275,7 @@ variable "vnets" {
   description = "Map of virtual networks available to the module"
   type        = map(any)
   default     = null
+  sensitive   = false
 }
 
 variable "user_defined_routes" {
@@ -286,9 +287,11 @@ variable "container_registries" {
   type        = map(any)
   description = "Map of container registries available to the module"
   default     = {}
+  sensitive   = false
 }
 variable "resource_groups" {
   type        = map(any)
   description = "Map of resource groups available to the module"
   default     = {}
+  sensitive   = false
 }
