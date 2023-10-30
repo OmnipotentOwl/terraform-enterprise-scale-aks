@@ -8,14 +8,16 @@
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.0 |
 | <a name="requirement_flux"></a> [flux](#requirement\_flux) | >= 1.0.1 |
 | <a name="requirement_github"></a> [github](#requirement\_github) | >= 4.5.2 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | >= 3.5.1 |
 | <a name="requirement_tls"></a> [tls](#requirement\_tls) | >= 3.1.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_flux"></a> [flux](#provider\_flux) | 1.1.0 |
-| <a name="provider_github"></a> [github](#provider\_github) | 5.34.0 |
+| <a name="provider_flux"></a> [flux](#provider\_flux) | 1.1.2 |
+| <a name="provider_github"></a> [github](#provider\_github) | 5.41.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.5.1 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.4 |
 
 ## Modules
@@ -28,6 +30,7 @@ No modules.
 |------|------|
 | [flux_bootstrap_git.this](https://registry.terraform.io/providers/fluxcd/flux/latest/docs/resources/bootstrap_git) | resource |
 | [github_repository_deploy_key.this](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/repository_deploy_key) | resource |
+| [random_id.k8s_tracker](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
 | [tls_private_key.flux](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/resources/private_key) | resource |
 | [github_repository.main](https://registry.terraform.io/providers/integrations/github/latest/docs/data-sources/repository) | data source |
 

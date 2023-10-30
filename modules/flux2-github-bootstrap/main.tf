@@ -7,3 +7,12 @@ resource "tls_private_key" "flux" {
   algorithm   = "ECDSA"
   ecdsa_curve = "P256"
 }
+
+resource "random_id" "k8s_tracker" {
+  byte_length = 8
+  keepers = {
+    k8s_cluster_host = var.kubernetes_configuration.host
+    k8s_cluster_ca   = var.kubernetes_configuration.cluster_ca_certificate
+    k8s_cluster_cert = var.kubernetes_configuration.client_certificate
+  }
+}

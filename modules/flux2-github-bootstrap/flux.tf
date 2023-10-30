@@ -15,4 +15,10 @@ resource "flux_bootstrap_git" "this" {
   depends_on = [
     github_repository_deploy_key.this
   ]
+
+  lifecycle {
+    replace_triggered_by = [
+      random_id.k8s_tracker.id
+    ]
+  }
 }
