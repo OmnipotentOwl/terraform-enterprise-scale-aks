@@ -79,9 +79,16 @@ variable "aks_configuration" {
       lz_key = optional(string, null)
       id     = optional(string, null)
     })), {})
-    oms_agent = optional(object({
-      log_analytics_workspace_id      = optional(string, null)
-      msi_auth_for_monitoring_enabled = optional(bool, false)
+    container_insights = optional(object({
+      log_analytics_workspace_id                   = optional(string, null)
+      msi_auth_for_monitoring_enabled              = optional(bool, false)
+      streams                                      = optional(list(string), ["Microsoft-ContainerLog", "Microsoft-ContainerLogV2", "Microsoft-KubeEvents", "Microsoft-KubePodInventory", "Microsoft-KubeNodeInventory", "Microsoft-KubePVInventory", "Microsoft-KubeServices", "Microsoft-KubeMonAgentEvents", "Microsoft-InsightsMetrics", "Microsoft-ContainerInventory", "Microsoft-ContainerNodeInventory", "Microsoft-Perf"])
+      data_collection_interval                     = optional(string, "1m")
+      namespace_filtering_mode_for_data_collection = optional(string, "Off")
+      namespaces_for_data_collection               = optional(list(string), ["kube-system", "gatekeeper-system", "azure-arc"])
+      enable_syslog                                = optional(bool, false)
+      syslog_facilities                            = optional(list(string), ["auth", "authpriv", "cron", "daemon", "mark", "kern", "local0", "local1", "local2", "local3", "local4", "local5", "local6", "local7", "lpr", "mail", "news", "syslog", "user", "uucp"])
+      syslog_levels                                = optional(list(string), ["Debug", "Info", "Notice", "Warning", "Error", "Critical", "Alert", "Emergency"])
     }), null)
     microsoft_defender = optional(object({
       log_analytics_workspace_id = optional(string, null)

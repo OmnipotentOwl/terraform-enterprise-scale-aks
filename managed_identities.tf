@@ -86,7 +86,7 @@ resource "azurerm_role_assignment" "cluster_control_plane_private_zone_dns_zone_
   principal_id         = azurerm_user_assigned_identity.cluster_control_plane[0].principal_id
 }
 resource "azurerm_role_assignment" "oms_agent_monitoring_metrics_publisher" {
-  count = var.aks_configuration.oms_agent != null ? 1 : 0
+  count = var.aks_configuration.container_insights != null ? var.aks_configuration.container_insights.msi_auth_for_monitoring_enabled ? 0 : 1 : 0
 
   scope                = azurerm_kubernetes_cluster.k8s.id
   role_definition_name = "Monitoring Metrics Publisher"

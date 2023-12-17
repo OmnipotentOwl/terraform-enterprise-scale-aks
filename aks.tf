@@ -143,7 +143,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   }
 
   dynamic "oms_agent" {
-    for_each = try(var.aks_configuration.oms_agent[*], {})
+    for_each = try(var.aks_configuration.container_insights[*], {})
     content {
       log_analytics_workspace_id      = can(oms_agent.value.log_analytics_workspace_id) && (oms_agent.value.log_analytics_workspace_id != null && oms_agent.value.log_analytics_workspace_id != "") ? oms_agent.value.log_analytics_workspace_id : var.aks_configuration.log_analytics_workspace_id
       msi_auth_for_monitoring_enabled = oms_agent.value.msi_auth_for_monitoring_enabled
