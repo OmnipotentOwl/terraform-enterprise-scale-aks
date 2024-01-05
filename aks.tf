@@ -172,7 +172,6 @@ resource "azurerm_kubernetes_cluster" "k8s" {
       default_node_pool[0].node_count,
       default_node_pool[0].node_taints,
       default_node_pool[0].tags,
-      oms_agent,
       microsoft_defender,
       tags
     ]
