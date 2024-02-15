@@ -90,6 +90,12 @@ variable "aks_configuration" {
       syslog_facilities                            = optional(list(string), ["auth", "authpriv", "cron", "daemon", "mark", "kern", "local0", "local1", "local2", "local3", "local4", "local5", "local6", "local7", "lpr", "mail", "news", "syslog", "user", "uucp"])
       syslog_levels                                = optional(list(string), ["Debug", "Info", "Notice", "Warning", "Error", "Critical", "Alert", "Emergency"])
     }), null)
+    managed_prometheus = optional(object({
+      azure_monitor_workspace_id       = optional(string, null)
+      azure_monitor_workspace_location = optional(string, null)
+      metric_annotations_allowlist     = optional(string, null)
+      metric_labels_allowlist          = optional(string, null)
+    }), null)
     microsoft_defender = optional(object({
       log_analytics_workspace_id = optional(string, null)
       log_analytics_key          = optional(string, null)

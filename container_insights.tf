@@ -62,3 +62,14 @@ resource "azurerm_monitor_data_collection_rule_association" "container_insights"
   data_collection_rule_id = azurerm_monitor_data_collection_rule.container_insights[0].id
   description             = "Association of data collection rule. Deleting this association will break the data collection for this AKS Cluster."
 }
+
+module "managed_prometheus" {
+  source = "./modules/aks-managed-prometheus"
+  count  = local.provision_managed_prometheus_integration ? 1 : 0
+
+  cluster_id                       = azurerm_kubernetes_cluster.k8s.id
+  cluster_name                     = azurerm_kubernetes_cluster.k8s.name
+  cluster_resource_group_name      = azurerm_kubernetes_cluster.k8s.resource_group_name
+  azure_monitor_workspace_id       = var.aks_configuration.managed_prometheus.azure_monitor_workspace_id
+  azure_monitor_workspace_location = var.aks_configuration.managed_prometheus.azure_monitor_workspace_location
+}
