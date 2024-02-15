@@ -150,6 +150,14 @@ resource "azurerm_kubernetes_cluster" "k8s" {
     }
   }
 
+  dynamic "monitor_metrics" {
+    for_each = local.provision_managed_prometheus_integration ? [var.aks_configuration.managed_prometheus] : []
+    content {
+      annotations_allowed = monitor_metrics.value.metric_annotations_allowlist
+      labels_allowed      = monitor_metrics.value.metric_labels_allowlist
+    }
+  }
+
   dynamic "microsoft_defender" {
     for_each = try(var.aks_configuration.microsoft_defender[*], {})
     content {
